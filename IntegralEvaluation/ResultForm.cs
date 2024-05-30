@@ -26,8 +26,17 @@ namespace IntegralEvaluation
             this.intervals = intervals;
 
             InitializeComponent();
+            double test = 1e100;
             Solve();
-            Draw();
+            try
+            {
+                Draw();
+            }
+            catch
+            {
+                this.chart.Series.Clear();
+                MessageBox.Show("Виникла помилка візуалізації.\nЧисла занадто великі або занадто малі", "Помилка");
+            }
         }
 
         private void Solve()
@@ -71,7 +80,9 @@ namespace IntegralEvaluation
             for (double x = a; x <= b; x += drawingPrecision)
             {
                 ctx.x = Math.Round(x, pointPrecision);
-                this.chart.Series[1].Points.AddXY(x, this.expression.Evaluate(ctx));
+                double value = this.expression.Evaluate(ctx);
+                Convert.ToDecimal(value);
+                this.chart.Series[1].Points.AddXY(x, value);
             }
         }
 
@@ -89,6 +100,7 @@ namespace IntegralEvaluation
                         ctx.x = Math.Round(x + delta / 2, pointPrecision);
                         double value = this.expression.Evaluate(ctx);
                         IntegralSolving.ValidateDouble(value);
+                        Convert.ToDecimal(value);
                         this.chart.Series[0].Points.AddXY(x, value);
                         x += delta;
                         this.chart.Series[0].Points.AddXY(x, value);
@@ -99,6 +111,7 @@ namespace IntegralEvaluation
                     {
                         ctx.x = x;
                         double value = this.expression.Evaluate(ctx);
+                        Convert.ToDecimal(value);
                         IntegralSolving.ValidateDouble(value);
                         this.chart.Series[0].Points.AddXY(x, value);
                         x = Math.Round(x + delta, pointPrecision);
@@ -115,6 +128,7 @@ namespace IntegralEvaluation
                         {
                             double value = interpolatedFunc(num);
                             IntegralSolving.ValidateDouble(value);
+                            Convert.ToDecimal(value);
                             this.chart.Series[0].Points.AddXY(num, value);
                         }
                     }
