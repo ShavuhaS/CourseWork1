@@ -51,7 +51,7 @@ namespace IntegralEvaluation
                     break;
                 case SolvingMethod.Trapezoid:
                     res = IntegralSolving.Trapezoid(expression, a, b, intervals);
-                    complexity = intervals;
+                    complexity = intervals + 1;
                     break;
                 case SolvingMethod.Simpson:
                     res = IntegralSolving.Simpson(expression, a, b, intervals);
