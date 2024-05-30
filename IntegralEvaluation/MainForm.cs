@@ -10,12 +10,13 @@ namespace IntegralEvaluation
         private const string placeholderB = "Верхня межа";
         private readonly Color textboxColor = Color.LightBlue;
         private readonly Color errorColor = Color.Red;
+
+        private const double checkingPrecision = 1e-3;
         private const double minLimit = -1e3;
         private const double maxLimit = 1e3;
         private const int maxDigits = 6;
         private const int minIntervals = 1;
         private const int maxIntervals = 1000;
-        private GuideForm guideForm;
 
         private Expression expression;
         private double a;
@@ -108,6 +109,29 @@ namespace IntegralEvaluation
                 label_AB_info.ForeColor = errorColor;
                 this.ShowError("A повинно бути меншим за B");
                 return false;
+            }
+
+            return true;
+        }
+
+        private bool ValidateFunction()
+        {
+            FunctionContext ctx = new FunctionContext(a);
+
+            for(double x = a; x <= b; x += checkingPrecision)
+            {
+                ctx.x = x;
+                double value = expression.Evaluate(ctx);
+                try
+                {
+                    IntegralSolving.ValidateDouble(value);
+                }
+                catch(Exception e)
+                {
+                    textBox_Formula.BackColor = errorColor;
+                    this.ShowError(e.Message);
+                    return false;
+                }
             }
 
             return true;
@@ -219,7 +243,8 @@ namespace IntegralEvaluation
                 !ValidateAB() ||
                 !ValidateFormula() ||
                 !ValidateIntervals() ||
-                !ValidateMethod()
+                !ValidateMethod() ||
+                !ValidateFunction()
             ) return;
 
             try
